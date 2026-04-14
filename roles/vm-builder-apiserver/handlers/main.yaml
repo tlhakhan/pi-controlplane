@@ -1,0 +1,6 @@
+---
+- name: Restart vm-builder-apiserver
+  ansible.builtin.systemd:
+    name: vm-builder-apiserver
+    state: restarted
+    daemon_reload: true

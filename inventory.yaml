@@ -2,7 +2,13 @@
 raspberry:
   hosts:
     raspberry-1.local:
-      wakelet_version: v1.3.0
+      vm_builder_apiserver_version: v1.2.0
+      vm_builder_apiserver_hosts:
+        - name: nvidia-1
+          url: https://nvidia-1.local:8443
+        - name: sparkle-1
+          url: https://sparkle-1.local:8443
+      wakelet_version: v1.3.1
       wakelet_ups:
         - nut_name: apc
           display_name: APC SMC1500
