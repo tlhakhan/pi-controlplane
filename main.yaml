@@ -1,0 +1,12 @@
+---
+- name: Raspberry Pi setup
+  hosts: raspberry
+  become: true
+
+  tasks:
+    - name: Ping host
+      ansible.builtin.ping:
+
+  roles:
+    - nut
+    - wakelet

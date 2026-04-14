@@ -1,0 +1,17 @@
+[Unit]
+Description=Wakelet — HomeKit IoT bridge
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory={{ wakelet_install_dir }}
+ExecStartPre=/bin/mkdir -p {{ wakelet_state_dir }}
+ExecStartPre=/bin/mkdir -p {{ wakelet_config_dir }}/private
+ExecStart={{ wakelet_install_dir }}/.venv/bin/python driver.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

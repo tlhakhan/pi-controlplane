@@ -1,0 +1,85 @@
+---
+# ── System dependencies ───────────────────────────────────────────────────
+
+- name: Ensure wakelet system dependencies are installed
+  ansible.builtin.package:
+    name:
+      - git
+      - python3
+      - python3-venv
+      - python3-pip
+      - etherwake
+      - openssh-client
+    state: present
+
+# ── Source ────────────────────────────────────────────────────────────────
+
+- name: Clone wakelet repository
+  ansible.builtin.git:
+    repo: "{{ wakelet_repo }}"
+    dest: "{{ wakelet_install_dir }}"
+    version: "{{ wakelet_version }}"
+    force: false
+  notify: Restart wakelet
+
+- name: Install Python dependencies into virtualenv
+  ansible.builtin.pip:
+    requirements: "{{ wakelet_install_dir }}/requirements.txt"
+    virtualenv: "{{ wakelet_install_dir }}/.venv"
+    virtualenv_command: python3 -m venv
+  notify: Restart wakelet
+
+# ── Directories ───────────────────────────────────────────────────────────
+
+- name: Create wakelet config directory
+  ansible.builtin.file:
+    path: "{{ wakelet_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create wakelet SSH key directory
+  ansible.builtin.file:
+    path: "{{ wakelet_config_dir }}/private"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Create wakelet state directory
+  ansible.builtin.file:
+    path: "{{ wakelet_state_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+# ── Configuration ─────────────────────────────────────────────────────────
+
+- name: Deploy hosts.yaml
+  ansible.builtin.template:
+    src: hosts.yaml.j2
+    dest: "{{ wakelet_config_dir }}/hosts.yaml"
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Restart wakelet
+
+# ── Systemd service ───────────────────────────────────────────────────────
+
+- name: Deploy wakelet systemd service unit
+  ansible.builtin.template:
+    src: wakelet.service.j2
+    dest: /etc/systemd/system/wakelet.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart wakelet
+
+- name: Enable and start wakelet
+  ansible.builtin.systemd:
+    name: wakelet
+    enabled: true
+    state: started
+    daemon_reload: true

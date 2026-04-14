@@ -1,0 +1,106 @@
+---
+# ── Packages ─────────────────────────────────────────────────────────────
+
+- name: Ensure nut-client and nut-server are installed
+  ansible.builtin.package:
+    name:
+      - nut-client
+      - nut-server
+    state: present
+
+# ── udev rule ────────────────────────────────────────────────────────────
+
+- name: Install udev rule granting nut group access to APC USB device
+  ansible.builtin.copy:
+    dest: /etc/udev/rules.d/90-nut-ups.rules
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      SUBSYSTEM=="usb", ATTRS{idVendor}=="051d", ATTRS{idProduct}=="0003", GROUP="nut", MODE="0660"
+  notify: Reload udev rules
+
+# ── NUT configuration ────────────────────────────────────────────────────
+
+- name: Configure /etc/nut/nut.conf
+  ansible.builtin.copy:
+    dest: /etc/nut/nut.conf
+    owner: root
+    group: nut
+    mode: "0640"
+    content: |
+      MODE=netserver
+  notify: Restart nut-server
+
+- name: Configure /etc/nut/ups.conf
+  ansible.builtin.copy:
+    dest: /etc/nut/ups.conf
+    owner: root
+    group: nut
+    mode: "0640"
+    content: |
+      [apc]
+        driver = usbhid-ups
+        port   = auto
+        desc   = "APC Smart-UPS C 1500"
+  notify: Restart nut-server
+
+- name: Configure /etc/nut/upsd.conf
+  ansible.builtin.copy:
+    dest: /etc/nut/upsd.conf
+    owner: root
+    group: nut
+    mode: "0640"
+    content: |
+      LISTEN 127.0.0.1 3493
+  notify: Restart nut-server
+
+- name: Configure /etc/nut/upsd.users
+  ansible.builtin.copy:
+    dest: /etc/nut/upsd.users
+    owner: root
+    group: nut
+    mode: "0640"
+    content: |
+      [readonly]
+        password   = readonly
+        actions    = get
+        instcmds   = none
+  notify: Restart nut-server
+
+# ── Services ─────────────────────────────────────────────────────────────
+
+- name: Enable and start nut-server
+  ansible.builtin.systemd:
+    name: nut-server
+    enabled: true
+    state: started
+
+- name: Disable and mask nut-monitor
+  ansible.builtin.systemd:
+    name: nut-monitor
+    enabled: false
+    masked: true
+    state: stopped
+
+# ── Verification ─────────────────────────────────────────────────────────
+
+- name: Query UPS status via upsc
+  ansible.builtin.command: upsc apc@localhost
+  register: upsc_output
+  changed_when: false
+
+- name: Assert ups.status is present
+  ansible.builtin.assert:
+    that: "'ups.status' in upsc_output.stdout"
+    fail_msg: "ups.status not found in upsc output"
+
+- name: Assert battery.charge is present
+  ansible.builtin.assert:
+    that: "'battery.charge' in upsc_output.stdout"
+    fail_msg: "battery.charge not found in upsc output"
+
+- name: Assert battery.runtime is present
+  ansible.builtin.assert:
+    that: "'battery.runtime' in upsc_output.stdout"
+    fail_msg: "battery.runtime not found in upsc output"

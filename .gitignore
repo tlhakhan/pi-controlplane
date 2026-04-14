@@ -1,0 +1,20 @@
+# Ansible retry files
+*.retry
+
+# Vault password files
+.vault_pass
+.vault_password
+
+# Sensitive variable overrides
+*.secret.yaml
+*.secret.yml
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

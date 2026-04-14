@@ -1,0 +1,9 @@
+---
+hosts:
+{% for host in wakelet_hosts %}
+  - name: {{ host.name }}
+    mac: {{ host.mac }}
+{% if host.holdup_timer is defined %}
+    holdup_timer: {{ host.holdup_timer }}
+{% endif %}
+{% endfor %}

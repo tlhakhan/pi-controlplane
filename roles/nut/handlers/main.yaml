@@ -1,0 +1,14 @@
+---
+- name: Reload udev rules
+  ansible.builtin.command: udevadm control --reload-rules
+  changed_when: false
+  notify: Trigger udev
+
+- name: Trigger udev
+  ansible.builtin.command: udevadm trigger
+  changed_when: false
+
+- name: Restart nut-server
+  ansible.builtin.systemd:
+    name: nut-server
+    state: restarted

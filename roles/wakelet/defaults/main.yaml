@@ -1,0 +1,20 @@
+---
+wakelet_repo: https://github.com/tlhakhan/wakelet
+wakelet_version: main
+wakelet_install_dir: /opt/wakelet
+wakelet_config_dir: /etc/wakelet
+wakelet_state_dir: /var/lib/wakelet
+
+# List of hosts to expose as HomeKit accessories.
+# Each entry requires name (hostname) and mac (MAC address).
+# Optional: holdup_timer (seconds to wait after power-on before checking
+# reachability, defaults to 60).
+#
+# Example:
+# wakelet_hosts:
+#   - name: desktop.local
+#     mac: aa:bb:cc:dd:ee:ff
+#   - name: nas.local
+#     mac: ca:fe:ba:be:00:02
+#     holdup_timer: 90
+wakelet_hosts: []

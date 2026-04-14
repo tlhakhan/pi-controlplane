@@ -1,0 +1,6 @@
+---
+- name: Restart wakelet
+  ansible.builtin.systemd:
+    name: wakelet
+    state: restarted
+    daemon_reload: true
