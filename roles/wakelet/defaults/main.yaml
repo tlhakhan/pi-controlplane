@@ -18,3 +18,12 @@ wakelet_state_dir: /var/lib/wakelet
 #     mac: ca:fe:ba:be:00:02
 #     holdup_timer: 90
 wakelet_hosts: []
+
+# List of UPS devices to expose as HomeKit accessories via NUT.
+# Each entry requires nut_name (NUT UPS name) and display_name (label shown in HomeKit).
+#
+# Example:
+# wakelet_ups:
+#   - nut_name: apc
+#     display_name: APC Smart-UPS C 1500
+wakelet_ups: []

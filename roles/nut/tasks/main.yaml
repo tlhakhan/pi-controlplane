@@ -51,8 +51,7 @@
     owner: root
     group: nut
     mode: "0640"
-    content: |
-      LISTEN 127.0.0.1 3493
+    content: ""
   notify: Restart nut-server
 
 - name: Configure /etc/nut/upsd.users
@@ -61,11 +60,7 @@
     owner: root
     group: nut
     mode: "0640"
-    content: |
-      [readonly]
-        password   = readonly
-        actions    = get
-        instcmds   = none
+    content: ""
   notify: Restart nut-server
 
 # ── Services ─────────────────────────────────────────────────────────────

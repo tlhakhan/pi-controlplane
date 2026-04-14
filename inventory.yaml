@@ -2,7 +2,10 @@
 raspberry:
   hosts:
     raspberry-1.local:
-      wakelet_version: v1.2.0
+      wakelet_version: v1.3.0
+      wakelet_ups:
+        - nut_name: apc
+          display_name: APC SMC1500
       wakelet_hosts:
         - name: console-1.local
           mac: 00:ce:39:d3:7f:69

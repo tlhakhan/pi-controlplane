@@ -7,3 +7,10 @@ hosts:
     holdup_timer: {{ host.holdup_timer }}
 {% endif %}
 {% endfor %}
+{% if wakelet_ups %}
+ups:
+{% for u in wakelet_ups %}
+  - nut_name: {{ u.nut_name }}
+    display_name: {{ u.display_name }}
+{% endfor %}
+{% endif %}

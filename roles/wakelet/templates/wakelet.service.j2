@@ -9,7 +9,10 @@ Group=root
 WorkingDirectory={{ wakelet_install_dir }}
 ExecStartPre=/bin/mkdir -p {{ wakelet_state_dir }}
 ExecStartPre=/bin/mkdir -p {{ wakelet_config_dir }}/private
-ExecStart={{ wakelet_install_dir }}/.venv/bin/python driver.py
+ExecStart={{ wakelet_install_dir }}/.venv/bin/python driver.py \
+  --state-file {{ wakelet_state_dir }}/wakelet.state \
+  --private-dir {{ wakelet_config_dir }}/private \
+  --registry-file {{ wakelet_config_dir }}/registry.yaml
 Restart=on-failure
 RestartSec=5
 

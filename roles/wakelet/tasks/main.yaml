@@ -57,10 +57,10 @@
 
 # ── Configuration ─────────────────────────────────────────────────────────
 
-- name: Deploy hosts.yaml
+- name: Deploy registry.yaml
   ansible.builtin.template:
-    src: hosts.yaml.j2
-    dest: "{{ wakelet_config_dir }}/hosts.yaml"
+    src: registry.yaml.j2
+    dest: "{{ wakelet_config_dir }}/registry.yaml"
     owner: root
     group: root
     mode: "0640"
