@@ -10,3 +10,4 @@
   roles:
     - nut
     - wakelet
+    - vm-builder-dashboard

@@ -1,0 +1,6 @@
+---
+- name: Restart vm-builder-dashboard
+  ansible.builtin.systemd:
+    name: vm-builder-dashboard
+    state: restarted
+    daemon_reload: true

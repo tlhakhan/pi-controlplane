@@ -1,0 +1,133 @@
+---
+- name: Ensure vm-builder-dashboard system dependencies are installed
+  ansible.builtin.package:
+    name:
+      - git
+      - python3
+      - python3-venv
+      - python3-pip
+    state: present
+
+- name: Create vm-builder-dashboard install directory
+  ansible.builtin.file:
+    path: "{{ vm_builder_dashboard_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create vm-builder-dashboard config directory
+  ansible.builtin.file:
+    path: "{{ vm_builder_dashboard_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Create vm-builder-dashboard state directory
+  ansible.builtin.file:
+    path: "{{ vm_builder_dashboard_state_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Clone vm-builder-dashboard repository
+  ansible.builtin.git:
+    repo: "{{ vm_builder_dashboard_repo }}"
+    dest: "{{ vm_builder_dashboard_install_dir }}"
+    version: "{{ vm_builder_dashboard_version }}"
+    force: false
+  notify: Restart vm-builder-dashboard
+
+- name: Install vm-builder-dashboard Python dependencies into virtualenv
+  ansible.builtin.pip:
+    requirements: "{{ vm_builder_dashboard_install_dir }}/requirements.txt"
+    virtualenv: "{{ vm_builder_dashboard_venv_dir }}"
+    virtualenv_command: python3 -m venv
+  notify: Restart vm-builder-dashboard
+
+- name: Ensure vm-builder-dashboard files are owned by the service user
+  ansible.builtin.file:
+    path: "{{ vm_builder_dashboard_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    recurse: true
+
+- name: Check for existing vm-builder-dashboard secret key file
+  ansible.builtin.stat:
+    path: "{{ vm_builder_dashboard_secret_key_file }}"
+  register: vm_builder_dashboard_secret_key_stat
+  when: vm_builder_dashboard_secret_key | length == 0
+
+- name: Generate vm-builder-dashboard secret key
+  ansible.builtin.command:
+    argv:
+      - python3
+      - -c
+      - import secrets; print(secrets.token_urlsafe(48))
+  register: vm_builder_dashboard_generated_secret_key
+  changed_when: true
+  no_log: true
+  when:
+    - vm_builder_dashboard_secret_key | length == 0
+    - not vm_builder_dashboard_secret_key_stat.stat.exists
+
+- name: Persist generated vm-builder-dashboard secret key
+  ansible.builtin.copy:
+    content: "{{ vm_builder_dashboard_generated_secret_key.stdout | trim }}\n"
+    dest: "{{ vm_builder_dashboard_secret_key_file }}"
+    owner: root
+    group: root
+    mode: "0640"
+  no_log: true
+  notify: Restart vm-builder-dashboard
+  when:
+    - vm_builder_dashboard_secret_key | length == 0
+    - not vm_builder_dashboard_secret_key_stat.stat.exists
+
+- name: Read vm-builder-dashboard secret key from host
+  ansible.builtin.slurp:
+    path: "{{ vm_builder_dashboard_secret_key_file }}"
+  register: vm_builder_dashboard_secret_key_file_contents
+  no_log: true
+  when: vm_builder_dashboard_secret_key | length == 0
+
+- name: Set effective vm-builder-dashboard secret key
+  ansible.builtin.set_fact:
+    vm_builder_dashboard_secret_key_effective: >-
+      {{
+        (vm_builder_dashboard_secret_key | length > 0)
+        | ternary(
+          vm_builder_dashboard_secret_key,
+          vm_builder_dashboard_secret_key_file_contents.content | b64decode | trim
+        )
+      }}
+  no_log: true
+
+- name: Deploy vm-builder-dashboard environment file
+  ansible.builtin.template:
+    src: vm-builder-dashboard.env.j2
+    dest: "{{ vm_builder_dashboard_env_file }}"
+    owner: root
+    group: root
+    mode: "0640"
+  no_log: true
+  notify: Restart vm-builder-dashboard
+
+- name: Deploy vm-builder-dashboard systemd service unit
+  ansible.builtin.template:
+    src: vm-builder-dashboard.service.j2
+    dest: /etc/systemd/system/vm-builder-dashboard.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart vm-builder-dashboard
+
+- name: Enable and start vm-builder-dashboard
+  ansible.builtin.systemd:
+    name: vm-builder-dashboard
+    enabled: true
+    state: started
+    daemon_reload: true

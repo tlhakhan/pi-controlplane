@@ -1,0 +1,20 @@
+[Unit]
+Description=vm-builder-dashboard
+After=network.target
+
+[Service]
+Type=simple
+User={{ vm_builder_dashboard_user }}
+Group={{ vm_builder_dashboard_group }}
+WorkingDirectory={{ vm_builder_dashboard_install_dir }}
+EnvironmentFile={{ vm_builder_dashboard_env_file }}
+ExecStart={{ vm_builder_dashboard_venv_dir }}/bin/uvicorn main:app --host {{ vm_builder_dashboard_listen_host }} --port {{ vm_builder_dashboard_listen_port }} --workers {{ vm_builder_dashboard_workers }}
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths={{ vm_builder_dashboard_state_dir }}
+
+[Install]
+WantedBy=multi-user.target

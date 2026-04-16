@@ -1,0 +1,24 @@
+---
+vm_builder_dashboard_repo: https://github.com/tlhakhan/vm-builder-dashboard
+vm_builder_dashboard_version: main
+vm_builder_dashboard_user: root
+vm_builder_dashboard_group: root
+vm_builder_dashboard_install_dir: /opt/vm-builder-dashboard
+vm_builder_dashboard_venv_dir: /opt/vm-builder-dashboard/venv
+vm_builder_dashboard_config_dir: /etc/vm-builder-dashboard
+vm_builder_dashboard_env_file: /etc/vm-builder-dashboard/vm-builder-dashboard.env
+vm_builder_dashboard_secret_key_file: /etc/vm-builder-dashboard/secret_key
+vm_builder_dashboard_state_dir: /var/lib/vm-builder-dashboard
+vm_builder_dashboard_db_path: /var/lib/vm-builder-dashboard/db.sqlite3
+vm_builder_dashboard_agent_pki_dir: /var/lib/vm-builder-dashboard/pki
+vm_builder_dashboard_listen_host: 127.0.0.1
+vm_builder_dashboard_listen_port: 8081
+vm_builder_dashboard_workers: 1
+vm_builder_dashboard_agent_health_interval: 10
+vm_builder_dashboard_agent_timeout_seconds: 30
+vm_builder_dashboard_agent_health_timeout_seconds: 5
+vm_builder_dashboard_agent_tls_insecure_skip_verify: true # agents use self-signed certs by default
+
+# If unset, the role keeps a generated key on the target host at
+# vm_builder_dashboard_secret_key_file and reuses it on future runs.
+vm_builder_dashboard_secret_key: ""
