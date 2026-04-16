@@ -25,8 +25,7 @@ You will be prompted for the sudo password on each run.
 ├── ansible.cfg        # Project-level Ansible configuration
 └── roles/
     ├── nut/                    # NUT (Network UPS Tools) — APC UPS over USB
-    ├── wakelet/                # Wakelet — HomeKit bridge for Wake-on-LAN
-    └── vm-builder-apiserver/  # VM Builder API server — homelab VM control plane
+    └── wakelet/                # Wakelet — HomeKit bridge for Wake-on-LAN
 ```
 
 ## Roles
@@ -70,34 +69,4 @@ Each entry in `wakelet_hosts` takes:
 - name: hostname.local   # required
   mac: aa:bb:cc:dd:ee:ff # required — used for Wake-on-LAN
   holdup_timer: 60       # optional — seconds to wait after power-on before checking reachability
-```
-
-### vm-builder-apiserver
-
-Installs and configures [vm-builder-apiserver](https://github.com/tlhakhan/vm-builder-apiserver), a REST API control plane for managing VMs across hypervisor agents via mTLS.
-
-| What | Detail |
-|------|--------|
-| Binary | `/usr/local/bin/vm-builder-apiserver` |
-| Listen port | `:8080` |
-| Private keys / certs | `/etc/vm-builder-apiserver/private/` |
-| Agent registry | `/var/lib/vm-builder-apiserver/registry.json` |
-| Transport | mTLS to agents on port 8443 |
-
-#### Host variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `vm_builder_apiserver_version` | `v1.2.0` | GitHub release tag to download |
-| `vm_builder_apiserver_listen` | `:8080` | Address and port to listen on |
-| `vm_builder_apiserver_agent_mtls` | `true` | Enable mTLS for agent connections |
-| `vm_builder_apiserver_agent_insecure_skip_verify` | `true` | Skip TLS certificate verification for agents |
-| `vm_builder_apiserver_health_interval` | `10s` | Agent health check interval |
-| `vm_builder_apiserver_hosts` | `[]` | List of hypervisor agents to register |
-
-Each entry in `vm_builder_apiserver_hosts` takes:
-
-```yaml
-- name: hypervisor-1                    # required
-  url: https://hypervisor-1.local:8443  # required
 ```
