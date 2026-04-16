@@ -3,7 +3,7 @@ raspberry:
   hosts:
     raspberry-1.local:
       vm_builder_dashboard_version: v1.0.1
-      wakelet_version: v1.3.1
+      wakelet_version: v1.3.2
       wakelet_ups:
         - nut_name: apc
           display_name: APC SMC1500
