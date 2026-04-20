@@ -1,0 +1,13 @@
+---
+oreilly_cache_version: v1.1.0
+oreilly_cache_arch: arm64
+oreilly_cache_binary_name: oreilly-cache-linux-{{ oreilly_cache_arch }}
+oreilly_cache_release_api_url: "https://api.github.com/repos/tlhakhan/oreilly-cache/releases/tags/{{ oreilly_cache_version }}"
+oreilly_cache_install_path: /usr/local/bin/oreilly-cache
+oreilly_cache_state_dir: /var/lib/oreilly-cache
+oreilly_cache_listen: ":8080"
+oreilly_cache_scrape_interval: 120h
+oreilly_cache_workers: 5
+oreilly_cache_page_size: 100
+oreilly_cache_http_timeout: 30s
+oreilly_cache_shutdown_timeout: 10s

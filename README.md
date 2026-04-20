@@ -25,6 +25,7 @@ You will be prompted for the sudo password on each run.
 ├── ansible.cfg        # Project-level Ansible configuration
 └── roles/
     ├── nut/                    # NUT (Network UPS Tools) — APC UPS over USB
+    ├── oreilly-cache/          # O'Reilly Learning API cache and SPA server
     ├── vm-builder-dashboard/   # VM Builder dashboard and control plane
     └── wakelet/                # Wakelet — HomeKit bridge for Wake-on-LAN
 ```
@@ -111,3 +112,27 @@ If `vm_builder_dashboard_secret_key` is not set, the role generates a random key
 | `vm_builder_dashboard_agent_timeout_seconds` | `30` | Timeout for proxied agent calls |
 | `vm_builder_dashboard_agent_health_timeout_seconds` | `5` | Timeout for background health checks |
 | `vm_builder_dashboard_agent_tls_insecure_skip_verify` | `false` | Skip TLS verification when calling HTTPS agents |
+
+### oreilly-cache
+
+Installs and configures [oreilly-cache](https://github.com/tlhakhan/oreilly-cache), the O'Reilly Learning API cache and SPA server.
+
+| What | Detail |
+|------|--------|
+| Binary | `/usr/local/bin/oreilly-cache` |
+| State | `/var/lib/oreilly-cache` |
+| Service user | `root` |
+| Default listen address | `:8080` |
+
+#### Host variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `oreilly_cache_version` | `v1.1.0` | GitHub release tag to deploy |
+| `oreilly_cache_arch` | `arm64` | Release binary architecture suffix |
+| `oreilly_cache_listen` | `:8080` | Listen address passed to the service |
+| `oreilly_cache_scrape_interval` | `120h` | Background scrape interval |
+| `oreilly_cache_workers` | `5` | Worker count |
+| `oreilly_cache_page_size` | `100` | API page size |
+
+To upgrade, update `oreilly_cache_version` in `inventory.yaml`. The role discovers the matching GitHub release asset and uses the asset digest as the download checksum.

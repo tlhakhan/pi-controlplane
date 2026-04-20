@@ -1,0 +1,59 @@
+---
+- name: Fetch oreilly-cache release metadata
+  ansible.builtin.uri:
+    url: "{{ oreilly_cache_release_api_url }}"
+    return_content: true
+  register: oreilly_cache_release
+
+- name: Select oreilly-cache release asset
+  ansible.builtin.set_fact:
+    oreilly_cache_release_asset: >-
+      {{
+        oreilly_cache_release.json.assets
+        | selectattr('name', 'equalto', oreilly_cache_binary_name)
+        | first
+      }}
+
+- name: Validate oreilly-cache release asset
+  ansible.builtin.assert:
+    that:
+      - oreilly_cache_release_asset is mapping
+      - oreilly_cache_release_asset.browser_download_url is defined
+      - oreilly_cache_release_asset.digest is defined
+    fail_msg: >-
+      Could not find a downloadable {{ oreilly_cache_binary_name }} asset with a
+      digest in oreilly-cache {{ oreilly_cache_version }}.
+
+- name: Create oreilly-cache state directory
+  ansible.builtin.file:
+    path: "{{ oreilly_cache_state_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Download oreilly-cache binary
+  ansible.builtin.get_url:
+    url: "{{ oreilly_cache_release_asset.browser_download_url }}"
+    dest: "{{ oreilly_cache_install_path }}"
+    owner: root
+    group: root
+    mode: "0755"
+    checksum: "{{ oreilly_cache_release_asset.digest }}"
+  notify: Restart oreilly-cache
+
+- name: Deploy oreilly-cache systemd service unit
+  ansible.builtin.template:
+    src: oreilly-cache.service.j2
+    dest: /etc/systemd/system/oreilly-cache.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart oreilly-cache
+
+- name: Enable and start oreilly-cache
+  ansible.builtin.systemd:
+    name: oreilly-cache
+    enabled: true
+    state: started
+    daemon_reload: true

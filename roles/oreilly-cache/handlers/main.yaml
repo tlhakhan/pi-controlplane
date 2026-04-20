@@ -1,0 +1,6 @@
+---
+- name: Restart oreilly-cache
+  ansible.builtin.systemd:
+    name: oreilly-cache
+    state: restarted
+    daemon_reload: true

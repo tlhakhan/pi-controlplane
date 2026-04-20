@@ -4,6 +4,7 @@ raspberry:
     raspberry-1.local:
       vm_builder_dashboard_version: v1.0.3
       wakelet_version: v1.3.2
+      oreilly_cache_version: v1.1.0
       wakelet_ups:
         - nut_name: apc
           display_name: APC SMC1500

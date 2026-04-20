@@ -1,0 +1,32 @@
+[Unit]
+Description=oreilly-cache - O'Reilly Learning API cache and SPA server
+Documentation=https://github.com/tlhakhan/oreilly-cache
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+
+ExecStart={{ oreilly_cache_install_path }} \
+  -cache-dir {{ oreilly_cache_state_dir }} \
+  -listen {{ oreilly_cache_listen }} \
+  -scrape-interval {{ oreilly_cache_scrape_interval }} \
+  -workers {{ oreilly_cache_workers }} \
+  -page-size {{ oreilly_cache_page_size }} \
+  -http-timeout {{ oreilly_cache_http_timeout }} \
+  -shutdown-timeout {{ oreilly_cache_shutdown_timeout }}
+
+Restart=on-failure
+RestartSec=5s
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths={{ oreilly_cache_state_dir }}
+
+[Install]
+WantedBy=multi-user.target
