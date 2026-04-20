@@ -45,6 +45,7 @@ Configures [NUT](https://networkupstools.org/) to monitor an APC Smart-UPS C 150
 | `nut-monitor` | disabled and masked (upsmon not needed) |
 
 A udev rule is written to `/etc/udev/rules.d/90-nut-ups.rules` granting the `nut` group access to the USB device.
+The APC driver is managed as `nut-driver@apc.service`, with `pollinterval` set in `ups.conf` to keep `usbhid-ups` out of interrupt-driven busy-wait mode.
 
 ### wakelet
 

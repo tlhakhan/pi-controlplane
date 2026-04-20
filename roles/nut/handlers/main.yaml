@@ -8,6 +8,11 @@
   ansible.builtin.command: udevadm trigger
   changed_when: false
 
+- name: Restart nut-driver apc
+  ansible.builtin.systemd:
+    name: nut-driver@apc
+    state: restarted
+
 - name: Restart nut-server
   ansible.builtin.systemd:
     name: nut-server

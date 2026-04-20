@@ -41,9 +41,14 @@
     content: |
       [apc]
         driver = usbhid-ups
-        port   = auto
+        port = auto
+        pollinterval = 5
+        offdelay = 120
+        ondelay = 30
         desc   = "APC Smart-UPS C 1500"
-  notify: Restart nut-server
+  notify:
+    - Restart nut-driver apc
+    - Restart nut-server
 
 - name: Configure /etc/nut/upsd.conf
   ansible.builtin.copy:
@@ -64,6 +69,12 @@
   notify: Restart nut-server
 
 # ── Services ─────────────────────────────────────────────────────────────
+
+- name: Enable and start APC NUT driver
+  ansible.builtin.systemd:
+    name: nut-driver@apc
+    enabled: true
+    state: started
 
 - name: Enable and start nut-server
   ansible.builtin.systemd:
